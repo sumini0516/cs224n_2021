@@ -90,23 +90,27 @@ def compute_co_occurrence_matrix(corpus, window_size=4):
     M = None
     word2ind = {}
     test_corpus_words, test_num_corpus_words = distinct_words(corpus)
-    corpus_size = len(corpus)
+    # print(test_corpus_words)
     M = np.zeros((test_num_corpus_words, test_num_corpus_words))
     for word in test_corpus_words:
         word2ind[word] = test_corpus_words.index(word)
+    # print(word2ind)
+    # print(corpus)
     for sentence in corpus:
         for idx, word_id in enumerate(sentence):
-            word_index = test_corpus_words.index(word_id)
+            # print(idx, word_id)
+            word_index = word2ind[word_id] #단어의 index -> well:9
+            # print(word_index)
             for size in range(1, window_size + 1):  # window_size=1 -> range(1,2)
-                left_idx = idx - size  # 0-1=-1
-                right_idx = idx + size  # 0+1=1
+                left_idx = idx - size  # 2-1=1
+                right_idx = idx + size  # 2+1=3
                 if left_idx >= 0:
                     left_word_id = sentence[left_idx]
-                    left_word_index = test_corpus_words.index(left_word_id)
+                    left_word_index = word2ind[left_word_id]
                     M[word_index, left_word_index] += 1
-                if right_idx <= corpus_size:
+                if right_idx < len(sentence):
                     right_word_id = sentence[right_idx]
-                    right_word_index = test_corpus_words.index(right_word_id)
+                    right_word_index = word2ind[right_word_id]
                     M[word_index, right_word_index] += 1
     # print(M)
     # print(word2ind)
@@ -141,6 +145,7 @@ print("Passed All Tests!")
 print ("-" * 80)
 '''
 
+'''
 # Question 1.2
 # Define toy corpus and get student's co-occurrence matrix
 test_corpus = ["{} All that glitters isn't gold {}".format(START_TOKEN, END_TOKEN).split(" "),
@@ -160,10 +165,11 @@ M_test_ans = np.array(
      [0., 0., 1., 0., 1., 1., 0., 0., 0., 1., ],
      [1., 0., 0., 1., 1., 0., 0., 0., 1., 0., ]]
 )
+print(M_test_ans)
 ans_test_corpus_words = sorted(
     [START_TOKEN, "All", "ends", "that", "gold", "All's", "glitters", "isn't", "well", END_TOKEN])
 word2ind_ans = dict(zip(ans_test_corpus_words, range(len(ans_test_corpus_words))))
-# print(word2ind_ans)
+print(word2ind_ans)
 # Test correct word2ind
 assert (word2ind_ans == word2ind_test), "Your word2ind is incorrect:\nCorrect: {}\nYours: {}".format(word2ind_ans, word2ind_test)
 
@@ -188,3 +194,4 @@ for w1 in word2ind_ans.keys():
 print ("-" * 80)
 print("Passed All Tests!")
 print ("-" * 80)
+'''
