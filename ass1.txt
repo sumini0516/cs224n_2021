@@ -1,0 +1,16 @@
+Word Embedding
+
+Natural language processing systems traditionally treat words as discreate atomic sympbols.
+These encodings are arbitrary, and provide no useful information to the system regarding the relationships that my exist between the individual symbols.
+
+-> Here comes word embeddings. Word embeddings are nothing but numerical representations of texts.
+
+There are many different types of word embeddings:
+(1) Frequency based embedding
+(2) Prediction based embedding
+--------------------------------------------------------------------
+Frequency based embedding
+
+Count vector:
+count vector model learns a vocabulary from all of the documents, then models each document by counting the number of times each word appears.
+For example, consider we have D documents and T is the number of different words in out vocabulary then the size of count vector matrix will be given by D*T.
