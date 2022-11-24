@@ -87,17 +87,33 @@ def compute_co_occurrence_matrix(corpus, window_size=4):
                 The ordering of the words in the rows/columns should be the same as the ordering of the words given by the distinct_words function.
             word2ind (dict): dictionary that maps word to index (i.e. row/column number) for matrix M.
     """
-    words, num_words = distinct_words(corpus)
     M = None
     word2ind = {}
-
-    # ------------------
-    # Write your implementation here.
-
-    # ------------------
-
+    test_corpus_words, test_num_corpus_words = distinct_words(corpus)
+    corpus_size = len(corpus)
+    M = np.zeros((test_num_corpus_words, test_num_corpus_words))
+    for word in test_corpus_words:
+        word2ind[word] = test_corpus_words.index(word)
+    for sentence in corpus:
+        for idx, word_id in enumerate(sentence):
+            word_index = test_corpus_words.index(word_id)
+            for size in range(1, window_size + 1):  # window_size=1 -> range(1,2)
+                left_idx = idx - size  # 0-1=-1
+                right_idx = idx + size  # 0+1=1
+                if left_idx >= 0:
+                    left_word_id = sentence[left_idx]
+                    left_word_index = test_corpus_words.index(left_word_id)
+                    M[word_index, left_word_index] += 1
+                if right_idx <= corpus_size:
+                    right_word_id = sentence[right_idx]
+                    right_word_index = test_corpus_words.index(right_word_id)
+                    M[word_index, right_word_index] += 1
+    # print(M)
+    # print(word2ind)
     return M, word2ind
 
+
+'''
 # Question 1.1
 reuters_corpus = read_corpus()
 # pprint.pprint(reuters_corpus[:3], compact=True, width=100)
@@ -107,7 +123,7 @@ test_corpus = ["{} All that glitters isn't gold {}".format(START_TOKEN, END_TOKE
                "{} All's well that ends well {}".format(START_TOKEN, END_TOKEN).split(" ")]
 test_corpus_words, num_corpus_words = distinct_words(test_corpus)
 print(test_corpus_words, num_corpus_words)
-
+'''
 '''
 # Correct answers
 ans_test_corpus_words = sorted([START_TOKEN, "All", "ends", "that", "gold", "All's", "glitters", "isn't", "well", END_TOKEN])
@@ -125,8 +141,50 @@ print("Passed All Tests!")
 print ("-" * 80)
 '''
 
-#Question 1.2
+# Question 1.2
 # Define toy corpus and get student's co-occurrence matrix
-test_corpus = ["{} All that glitters isn't gold {}".format(START_TOKEN, END_TOKEN).split(" "), "{} All's well that ends well {}".format(START_TOKEN, END_TOKEN).split(" ")]
+test_corpus = ["{} All that glitters isn't gold {}".format(START_TOKEN, END_TOKEN).split(" "),
+               "{} All's well that ends well {}".format(START_TOKEN, END_TOKEN).split(" ")]
 M_test, word2ind_test = compute_co_occurrence_matrix(test_corpus, window_size=1)
 
+# Correct M and word2ind
+M_test_ans = np.array(
+    [[0., 0., 0., 0., 0., 0., 1., 0., 0., 1., ],
+     [0., 0., 1., 1., 0., 0., 0., 0., 0., 0., ],
+     [0., 1., 0., 0., 0., 0., 0., 0., 1., 0., ],
+     [0., 1., 0., 0., 0., 0., 0., 0., 0., 1., ],
+     [0., 0., 0., 0., 0., 0., 0., 0., 1., 1., ],
+     [0., 0., 0., 0., 0., 0., 0., 1., 1., 0., ],
+     [1., 0., 0., 0., 0., 0., 0., 1., 0., 0., ],
+     [0., 0., 0., 0., 0., 1., 1., 0., 0., 0., ],
+     [0., 0., 1., 0., 1., 1., 0., 0., 0., 1., ],
+     [1., 0., 0., 1., 1., 0., 0., 0., 1., 0., ]]
+)
+ans_test_corpus_words = sorted(
+    [START_TOKEN, "All", "ends", "that", "gold", "All's", "glitters", "isn't", "well", END_TOKEN])
+word2ind_ans = dict(zip(ans_test_corpus_words, range(len(ans_test_corpus_words))))
+# print(word2ind_ans)
+# Test correct word2ind
+assert (word2ind_ans == word2ind_test), "Your word2ind is incorrect:\nCorrect: {}\nYours: {}".format(word2ind_ans, word2ind_test)
+
+# Test correct M shape
+assert (M_test.shape == M_test_ans.shape), "M matrix has incorrect shape.\nCorrect: {}\nYours: {}".format(M_test.shape, M_test_ans.shape)
+
+# Test correct M values
+for w1 in word2ind_ans.keys():
+    idx1 = word2ind_ans[w1]
+    for w2 in word2ind_ans.keys():
+        idx2 = word2ind_ans[w2]
+        student = M_test[idx1, idx2]
+        correct = M_test_ans[idx1, idx2]
+        if student != correct:
+            print("Correct M:")
+            print(M_test_ans)
+            print("Your M: ")
+            print(M_test)
+            raise AssertionError("Incorrect count at index ({}, {})=({}, {}) in matrix M. Yours has {} but should have {}.".format(idx1, idx2, w1, w2, student, correct))
+
+# Print Success
+print ("-" * 80)
+print("Passed All Tests!")
+print ("-" * 80)
