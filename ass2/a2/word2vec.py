@@ -124,6 +124,10 @@ def negSamplingLossAndGradient(
     ### YOUR CODE HERE (~10 Lines)
 
     ### Please use your implementation of sigmoid in here.
+    loss = 0.0
+    gradCenterVec = np.zeros_like(centerWordVec)
+    gradOutsideVecs = np.zeros_like(centerWordVec)
+
 
     ### END YOUR CODE
 
