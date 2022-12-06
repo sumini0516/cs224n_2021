@@ -61,30 +61,29 @@ def naiveSoftmaxLossAndGradient(
     ### This numerically stable implementation helps you avoid issues pertaining
     ### to integer overflow.
     W, D = outsideVectors.shape
-    print("W:", W) #10
-    print("D:", D) #3
+    # print("centerWordVec:", centerWordVec)
+    # print("outsideWordIdx:", outsideWordIdx)
+    # print("outsideVectors:", outsideVectors)
+    # print("target:", outsideVectors[outsideWordIdx])
+    # print("W:", W) #10
+    # print("D:", D) #3
     scores = centerWordVec.dot(outsideVectors.T)
-    print("scores:", scores)
+    # print("scores:", scores)
     prob = softmax(scores)
-    print("prob:",prob)
-    loss = -1 * np.log(prob)[outsideWordIdx]
-    print("loss:", loss)
+    # print("prob:",prob)
+    a = prob[outsideWordIdx]
+    loss = -1 * np.log(a)
+    # print("loss:", loss)
     target = np.zeros(W)
-
     target[outsideWordIdx] = 1
-
-    gradCenterVec = outsideVectors.T.dot(prob - target)
-
-    gradOutsideVecs = (prob - target).reshape(-1, 1).dot(centerWordVec.reshape((1, -1)))
-
+    gradCenterVec = outsideVectors.T.dot(prob-target)
+    gradOutsideVecs = (prob - target).reshape(-1, 1).dot(centerWordVec.reshape((1, -1))) #-1을 넣은 부분은 알아서 지정되는 것
     ### END YOUR CODE
-
     return loss, gradCenterVec, gradOutsideVecs
 
 
 def getNegativeSamples(outsideWordIdx, dataset, K):
     """ Samples K indexes which are not the outsideWordIdx """
-
     negSampleWordIndices = [None] * K
     for k in range(K):
         newidx = dataset.sampleTokenIdx()
@@ -118,7 +117,9 @@ def negSamplingLossAndGradient(
     # Negative sampling of words is done for you. Do not modify this if you
     # wish to match the autograder and receive points!
     negSampleWordIndices = getNegativeSamples(outsideWordIdx, dataset, K)
+    print("negSampleWordIndices:",negSampleWordIndices)
     indices = [outsideWordIdx] + negSampleWordIndices
+    print("indices:", indices)
 
     ### YOUR CODE HERE (~10 Lines)
 
