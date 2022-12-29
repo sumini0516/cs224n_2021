@@ -54,12 +54,6 @@ def naiveSoftmaxLossAndGradient(
                     in shape (num words in vocab, word vector length) 
                     (dJ / dU)
     """
-
-    ### YOUR CODE HERE (~6-8 Lines)
-
-    ### Please use the provided softmax function (imported earlier in this file)
-    ### This numerically stable implementation helps you avoid issues pertaining
-    ### to integer overflow.
     # print("centerWordVec:", centerWordVec)
     # print(centerWordVec.shape)
     # print("outsideWordInx:", outsideWordIdx)
