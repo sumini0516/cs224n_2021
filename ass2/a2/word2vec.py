@@ -60,25 +60,23 @@ def naiveSoftmaxLossAndGradient(
     ### Please use the provided softmax function (imported earlier in this file)
     ### This numerically stable implementation helps you avoid issues pertaining
     ### to integer overflow.
-    W, D = outsideVectors.shape
-    # print("centerWordVec:", centerWordVec)
-    # print("outsideWordIdx:", outsideWordIdx)
-    # print("outsideVectors:", outsideVectors)
-    # print("target:", outsideVectors[outsideWordIdx])
-    # print("W:", W) #10
-    # print("D:", D) #3
-    scores = centerWordVec.dot(outsideVectors.T)
-    # print("scores:", scores)
-    prob = softmax(scores)
-    # print("prob:",prob)
+    # print(outsideVectors.shape)
+    # print(centerWordVec.shape)
+    score = centerWordVec.dot(outsideVectors.T)
+    # print(score.shape)
+    prob = softmax(score)
+    # print(prob)
     a = prob[outsideWordIdx]
     loss = -1 * np.log(a)
-    # print("loss:", loss)
-    target = np.zeros(W)
+    target = np.zeros(10)
     target[outsideWordIdx] = 1
-    gradCenterVec = outsideVectors.T.dot(prob-target)
-    gradOutsideVecs = (prob - target).reshape(-1, 1).dot(centerWordVec.reshape((1, -1))) #-1을 넣은 부분은 알아서 지정되는 것
-    ### END YOUR CODE
+    # print(target)
+    distance = prob-target
+    # print(distance.shape)
+    gradCenterVec = outsideVectors.T.dot(distance)
+    gradOutsideVecs = distance.reshape(-1, 1).dot(centerWordVec.reshape((1, -1)))
+    # print(gradCenterVec)
+    # print(gradOutsideVecs)
     return loss, gradCenterVec, gradOutsideVecs
 
 
@@ -118,7 +116,7 @@ def negSamplingLossAndGradient(
     # wish to match the autograder and receive points!
     negSampleWordIndices = getNegativeSamples(outsideWordIdx, dataset, K)
     print("negSampleWordIndices:",negSampleWordIndices)
-    indices = [outsideWordIdx] + negSampleWordIndices
+    indices = [outsideWordIdx] + negSampleWordIndices #[1]+[4, 2, 3, 0, 4, 4, 3, 2, 3, 3]
     print("indices:", indices)
 
     ### YOUR CODE HERE (~10 Lines)
@@ -126,8 +124,19 @@ def negSamplingLossAndGradient(
     ### Please use your implementation of sigmoid in here.
     loss = 0.0
     gradCenterVec = np.zeros_like(centerWordVec)
-    gradOutsideVecs = np.zeros_like(centerWordVec)
+    gradOutsideVecs = np.zeros_like(outsideVectors)
 
+    scores = centerWordVec.dot(outsideVectors[outsideWordIdx].T)
+    print("scores:", scores)
+    prob = sigmoid(scores)
+    loss -= np.log(prob)
+    print("loss:", loss)
+
+    gradCenterVec -= (1 - prob) * outsideVectors[outsideWordIdx]
+    gradOutsideVecs[outsideWordIdx] -= (1 - prob) * centerWordVec
+
+    for i in K:
+        print(indices[i])
 
     ### END YOUR CODE
 
